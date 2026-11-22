@@ -1,0 +1,10 @@
+#!/bin/bash
+# Example root script to install cluster-guard.nft.
+# Copy to APPLY-cluster-guard.sh, replace <INSTALL_DIR> and <WORKER_IP>, and run with sudo.
+set -euo pipefail
+[[ ${EUID} -eq 0 ]] || { echo "Run as root: sudo bash $0" >&2; exit 1; }
+SRC="<INSTALL_DIR>/net"
+install -d -m 0755 /etc/nftables.d
+install -m 0644 -o root -g root "$SRC/cluster-guard.nft" /etc/nftables.d/cluster-guard.nft
+nft -f /etc/nftables.d/cluster-guard.nft
+nft list table inet cluster_guard

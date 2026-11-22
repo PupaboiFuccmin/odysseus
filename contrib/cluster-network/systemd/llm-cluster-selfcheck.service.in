@@ -1,0 +1,7 @@
+[Unit]
+Description=LLM cluster manager selfcheck (user service restart guard)
+
+[Service]
+Type=oneshot
+Environment=LLM_CLUSTER_HOME=@INSTALL_DIR@
+ExecStart=@PYTHON_BIN@ @INSTALL_DIR@/manager/selfcheck.py

@@ -1,0 +1,74 @@
+{
+  "_doc": "Odysseus <-> cluster bridge config. Copy to bridge/bridge.json and customize.",
+  "port": 11610,
+  "bind": [
+    "127.0.0.1",
+    "172.17.0.1"
+  ],
+  "allow_cidrs": [
+    "172.16.0.0/12"
+  ],
+  "token_file": "secret/bridge.token",
+  "manager": "http://127.0.0.1:11600",
+  "searxng": "http://127.0.0.1:8080",
+  "chromadb": "http://127.0.0.1:8100",
+  "ntfy": "http://127.0.0.1:8091",
+  "ntfy_topic": "llm-cluster-alerts",
+  "embed": {
+    "url": "http://127.0.0.1:11434",
+    "model": "nomic-embed-text",
+    "keep_alive": "30s"
+  },
+  "collections": {
+    "memory": "llm_cluster_memory",
+    "tasks": "llm_cluster_tasks"
+  },
+  "nodes": {
+    "mini": {
+      "id": "worker-node",
+      "ollama": "http://192.0.2.20:11434",
+      "default_model": "qwen2.5:7b",
+      "num_ctx": 4096
+    },
+    "desktop": {
+      "id": "manager-node",
+      "ollama": "http://127.0.0.1:11434",
+      "default_model": "gemma4:12b",
+      "num_ctx": 8192
+    }
+  },
+  "agent": {
+    "max_steps": 6,
+    "timeout_s": 600,
+    "temperature": 0.2
+  },
+  "poller": {
+    "enabled": true,
+    "interval_s": 30,
+    "notify_levels": [
+      "warn",
+      "crit"
+    ],
+    "notify_task_status": [
+      "needs_human",
+      "error"
+    ],
+    "notify_on_pass": false,
+    "archive_passed_tasks": true,
+    "min_interval_per_key_s": 1800
+  },
+  "orchestrator": {
+    "manager_model": "gemma4:12b",
+    "fast_model": "qwen2.5:3b",
+    "mini_text": "qwen2.5:7b",
+    "mini_code": "qwen2.5-coder:7b",
+    "max_subtasks": 4,
+    "fix_rounds": 2,
+    "heartbeat_s": 8,
+    "desktop_ctx": 8192,
+    "mini_ctx": 4096,
+    "search_results": 5,
+    "max_sources": 8,
+    "store_runs": true
+  }
+}

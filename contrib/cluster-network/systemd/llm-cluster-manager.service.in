@@ -1,0 +1,17 @@
+[Unit]
+Description=LLM cluster manager (:11600)
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=LLM_CLUSTER_HOME=@INSTALL_DIR@
+ExecStart=@PYTHON_BIN@ -u @INSTALL_DIR@/manager/manager.py
+WorkingDirectory=@INSTALL_DIR@
+Restart=on-failure
+RestartSec=10
+Nice=10
+IOSchedulingClass=idle
+MemoryMax=1G
+
+[Install]
+WantedBy=default.target

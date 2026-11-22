@@ -1,0 +1,70 @@
+{
+  "node": "manager-node",
+  "bind": [
+    "127.0.0.1"
+  ],
+  "port": 11600,
+  "ollama": "http://127.0.0.1:11434",
+  "token_file": "secret/cluster.token",
+  "peer": {
+    "name": "worker-node",
+    "ip": "192.0.2.20",
+    "ollama": "http://192.0.2.20:11434",
+    "heartbeat_stale_s": 90
+  },
+  "models": {
+    "desktop_text": "gemma4:12b",
+    "desktop_code": "qwen3-coder-30b:latest",
+    "checker": "gemma4:12b",
+    "mini_fast": "qwen2.5:3b",
+    "mini_main": "qwen2.5:7b",
+    "mini_code": "qwen2.5-coder:7b"
+  },
+  "desktop_options": {
+    "num_ctx": 8192,
+    "temperature": 0.2
+  },
+  "mini_options": {
+    "num_ctx": 4096,
+    "temperature": 0.2
+  },
+  "keep_alive_desktop": "2m",
+  "max_rounds": 3,
+  "desktop_rounds": 2,
+  "job_timeout_s": 420,
+  "poll_interval_s": 60,
+  "canary_interval_s": 600,
+  "alerts": {
+    "notify_send": true,
+    "min_interval_s": 1800
+  },
+  "remediation": {
+    "enabled": false,
+    "ollama_restart_after_failures": 3,
+    "min_interval_s": 1800
+  },
+  "api_allow_cidrs": [
+    "172.16.0.0/12"
+  ],
+  "api_token_file": "secret/api.token",
+  "ollama_backend": "cuda",
+  "offload": {
+    "service": "llm-cluster-offload.service (systemd --user)",
+    "port": 11630,
+    "bind": [
+      "127.0.0.1"
+    ],
+    "token_file": "secret/offload.token",
+    "config_file": "offload/offload.json"
+  },
+  "onboard": {
+    "probe_open": false,
+    "probe_max_bytes": 1048576,
+    "probe_allow_cidrs": [
+      "127.0.0.0/8",
+      "192.168.0.0/16",
+      "100.64.0.0/10"
+    ],
+    "manager_url": "http://127.0.0.1:11600"
+  }
+}

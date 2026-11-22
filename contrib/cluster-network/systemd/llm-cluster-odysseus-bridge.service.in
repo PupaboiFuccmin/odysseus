@@ -1,0 +1,17 @@
+[Unit]
+Description=LLM cluster <-> Odysseus bridge (:11610)
+After=network-online.target llm-cluster-manager.service
+Wants=llm-cluster-manager.service
+
+[Service]
+Type=simple
+Environment=LLM_CLUSTER_HOME=@INSTALL_DIR@
+ExecStart=@BRIDGE_PYTHON_BIN@ -u @INSTALL_DIR@/bridge/odysseus_bridge.py
+WorkingDirectory=@INSTALL_DIR@/bridge
+Restart=on-failure
+RestartSec=10
+Nice=10
+MemoryMax=1G
+
+[Install]
+WantedBy=default.target

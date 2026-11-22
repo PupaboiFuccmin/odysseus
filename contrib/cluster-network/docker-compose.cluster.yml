@@ -1,0 +1,28 @@
+# Optional Docker Compose overlay for Odysseus Cluster tab + Cluster Network routing.
+# Usage from the repository root (after running contrib/cluster-network/install.sh):
+#   COMPOSE_FILE=docker-compose.yml:contrib/cluster-network/docker-compose.cluster.yml docker compose up -d
+#
+# Set ODYSSEUS_CLUSTER_HOME to your installed companion directory (default: ./contrib/cluster-network).
+# Only read-only telemetry/state and api.token/bridge.token are mounted; cluster.token,
+# offload.token, and remote.token stay on the host.
+
+services:
+  odysseus:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      ODYSSEUS_CLUSTER_ENABLED: "${ODYSSEUS_CLUSTER_ENABLED:-1}"
+      ODYSSEUS_CLUSTER_NETWORK: "${ODYSSEUS_CLUSTER_NETWORK:-1}"
+      ODYSSEUS_CLUSTER_API_URL: "${ODYSSEUS_CLUSTER_API_URL:-http://host.docker.internal:11600}"
+      ODYSSEUS_CLUSTER_API_TOKEN_FILE: "${ODYSSEUS_CLUSTER_API_TOKEN_FILE:-/run/secrets/cluster_api_token}"
+      ODYSSEUS_CLUSTER_BRIDGE_URL: "${ODYSSEUS_CLUSTER_BRIDGE_URL:-http://host.docker.internal:11610/v1}"
+      ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE: "${ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE:-/run/secrets/cluster_bridge_token}"
+      ODYSSEUS_CLUSTER_DATA_DIR: "${ODYSSEUS_CLUSTER_DATA_DIR:-/cluster-data}"
+      ODYSSEUS_CLUSTER_MOCK: "${ODYSSEUS_CLUSTER_MOCK:-0}"
+    volumes:
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/journal:/cluster-data/journal:ro"
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/state:/cluster-data/state:ro"
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/devices.json:/cluster-data/devices.json:ro"
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/offload/journal:/cluster-data/offload:ro"
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/secret/api.token:/run/secrets/cluster_api_token:ro"
+      - "${ODYSSEUS_CLUSTER_HOME:-./contrib/cluster-network}/secret/bridge.token:/run/secrets/cluster_bridge_token:ro"

@@ -1,0 +1,16 @@
+[Unit]
+Description=LLM cluster remote controller heartbeat ingest (:11620)
+After=network-online.target
+
+[Service]
+Type=simple
+Environment=LLM_CLUSTER_HOME=@INSTALL_DIR@
+ExecStart=@PYTHON_BIN@ -u @INSTALL_DIR@/remote/ingest.py
+WorkingDirectory=@INSTALL_DIR@
+Restart=on-failure
+RestartSec=10
+Nice=10
+MemoryMax=256M
+
+[Install]
+WantedBy=default.target

@@ -1,0 +1,112 @@
+{
+  "_doc": "Example cluster device registry. Copy to devices.json and replace with your own hosts, IPs, and hardware details. Types: compute | router | controller | printer | camera | cooling | power-meter | smart-plug | generic.",
+  "devices": [
+    {
+      "id": "manager-node",
+      "name": "manager-node",
+      "type": "compute",
+      "role": "manager",
+      "job": "Plans, routes and checks tasks; runs larger models",
+      "ip": "192.0.2.10",
+      "port": "eth0",
+      "is_host": true,
+      "ollama": "http://host.docker.internal:11434",
+      "backend": "CUDA",
+      "hardware": {
+        "cpu": "Desktop / Workstation CPU",
+        "cpu_vendor": "intel",
+        "gpu": "Discrete GPU (12+ GB VRAM)",
+        "gpu_vendor": "nvidia",
+        "ram_gb": 32,
+        "os": "Linux",
+        "os_vendor": "linux"
+      }
+    },
+    {
+      "id": "worker-node",
+      "name": "worker-node",
+      "type": "compute",
+      "role": "worker",
+      "job": "Runs simple tasks (3B/7B models), reports back for review",
+      "ip": "192.0.2.20",
+      "port": "eth0",
+      "ollama": "http://192.0.2.20:11434",
+      "backend": "Vulkan",
+      "hardware": {
+        "cpu": "Mini PC / Secondary CPU",
+        "cpu_vendor": "amd",
+        "gpu": "Integrated / Secondary GPU",
+        "gpu_vendor": "amd",
+        "ram_gb": 16,
+        "os": "Linux",
+        "os_vendor": "linux"
+      }
+    },
+    {
+      "id": "cluster-router",
+      "name": "Cluster Router",
+      "type": "router",
+      "role": "network",
+      "job": "Gateway / LAN router for the cluster (read-only view)",
+      "vendor": "ubiquiti",
+      "model": "LAN Router / Switch",
+      "ip": "192.0.2.1",
+      "interfaces": [
+        {
+          "port": "eth1",
+          "ip": "192.0.2.1",
+          "subnet": "192.0.2.0/24",
+          "devices": [
+            "manager-node",
+            "worker-node"
+          ]
+        }
+      ],
+      "probe": {
+        "targets": [
+          "192.0.2.1"
+        ],
+        "tcp_ports": [
+          443,
+          80,
+          22
+        ]
+      }
+    }
+  ],
+  "_examples_disabled": [
+    {
+      "id": "remote-controller",
+      "name": "remote-controller",
+      "type": "controller",
+      "role": "remote / controller",
+      "job": "Wireless Odysseus browser controller (over Tailscale)",
+      "ip": "192.0.2.30",
+      "vendor": "handheld",
+      "model": "ARM Handheld / Tablet",
+      "hardware": {
+        "system": "Linux Handheld",
+        "cpu": "ARM64",
+        "cpu_vendor": "arm",
+        "os": "Ubuntu",
+        "os_vendor": "ubuntu"
+      }
+    },
+    {
+      "id": "printer-1",
+      "name": "3D Printer",
+      "type": "printer",
+      "role": "peripheral",
+      "vendor": "klipper",
+      "ip": "192.0.2.60",
+      "probe": {
+        "url": "http://192.0.2.60:7125/printer/objects/query?extruder&heater_bed&print_stats",
+        "fields": {
+          "hotend_c": "result.status.extruder.temperature",
+          "bed_c": "result.status.heater_bed.temperature",
+          "state": "result.status.print_stats.state"
+        }
+      }
+    }
+  ]
+}

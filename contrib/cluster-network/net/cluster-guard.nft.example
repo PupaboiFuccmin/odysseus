@@ -1,0 +1,14 @@
+#!/usr/sbin/nft -f
+# Example nftables rule restricting manager port 11600 to loopback, your worker IP,
+# and Docker bridge networks (172.16.0.0/12).
+# Replace <WORKER_IP> before installing to /etc/nftables.d/cluster-guard.nft.
+
+table inet cluster_guard {
+	chain input {
+		type filter hook input priority -10; policy accept;
+		tcp dport 11600 ip saddr { 127.0.0.0/8, <WORKER_IP>, 172.16.0.0/12 } accept
+		tcp dport 11600 drop
+		tcp dport 11600 ip6 saddr ::1 accept
+		tcp dport 11600 meta nfproto ipv6 drop
+	}
+}

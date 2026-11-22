@@ -1,0 +1,10 @@
+[Unit]
+Description=Run llm-cluster selfcheck every 2 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+Unit=llm-cluster-selfcheck.service
+
+[Install]
+WantedBy=timers.target
