@@ -6,6 +6,16 @@ Turn Odysseus into the hub for a multi-machine local LLM cluster — with **chai
 
 ---
 
+## Personal note from the author
+
+The update descriptions here are written by AI, specifically by Grok Bot agents. I am creating a cluster network using e-'waste' from a company that has allowed me to use the hardware they have on hand. The idea is that they can increase security by hosting simpler tasks locally instead of sending them directly to an open model, and decrease costs by managing hardware efficiently. If Odysseus is the main entry point, then anything beyond that UI is managed by a viewable device on the cluster network, not a cloud computer. The end game is to prioritize local hardware with a system that is self-managed using LLMs, but that is also set up to adopt better practices with every update from frontier models if necessary. I want to make privacy an option for everybody, even on a budget, and to keep technology diverse instead of everything running on the same few clouds and the newest hardware.
+
+### Long-term vision
+
+As AI keeps getting better, I think the need for Python libraries and high-level languages will move down toward C and compilers, and eventually toward binary that LLMs can tune well enough to turn outdated hardware into power-efficient processing or storage. Odysseus would reach that hardware directly and help optimize it automatically. That's the hope, not something I can promise today. I want old and varied machines to stay useful, so the ecosystem doesn't narrow down to a few vendors and whatever hardware is newest.
+
+---
+
 ## What It Includes
 
 1. **Cluster Tab (`ODYSSEUS_CLUSTER_ENABLED=1`)**
