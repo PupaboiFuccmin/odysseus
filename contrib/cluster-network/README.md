@@ -3,6 +3,8 @@
 Turn Odysseus into the hub for a multi-machine local LLM cluster — with **chain-of-command model routing**, live device monitoring, **frontier-agent token offload**, and **guided hardware onboarding**.
 
 > **Off by default.** Standard Odysseus installs are completely unaffected unless you set `ODYSSEUS_CLUSTER_ENABLED=1`. When disabled (or when the companion services are stopped), Odysseus hides the Cluster UI and routes chats normally.
+>
+> Odysseus maintainers evaluating this branch should start with [DEVELOPER_NOTES.md](DEVELOPER_NOTES.md) (core-file touchpoints, API surface, security notes, tests, measured results, known gaps, and a suggested PR split).
 
 ---
 

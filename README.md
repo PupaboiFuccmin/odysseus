@@ -67,7 +67,7 @@ If you run Ollama across more than one machine on your LAN or tailnet, the optio
 - **Hardware Onboarding** — a no-`sudo` probe and advisor (`probe.sh` + UI **Add device** panel) that recommends roles, fitting models, and setup checklists for new machines or peripherals.
 - **Host-aware model picker** — Cluster Network first, then Workers grouped by machine, with `ran on` reply footers and a remote-session banner so it is obvious that models run on the cluster, not on a controller.
 
-It is **off by default** (`ODYSSEUS_CLUSTER_ENABLED=0`) and degrades silently when unconfigured. See the [Cluster Network Guide](contrib/cluster-network/README.md) for architecture, security notes, and setup instructions. The guide also includes a [personal note from the author](contrib/cluster-network/README.md#personal-note-from-the-author) on privacy, leftover hardware, and keeping technology diverse.
+It is **off by default** (`ODYSSEUS_CLUSTER_ENABLED=0`) and degrades silently when unconfigured. See the [Cluster Network Guide](contrib/cluster-network/README.md) for architecture, security notes, and setup instructions. The guide also includes a [personal note from the author](contrib/cluster-network/README.md#personal-note-from-the-author) on privacy, leftover hardware, and keeping technology diverse. Maintainers evaluating this work should start with the [developer notes](contrib/cluster-network/DEVELOPER_NOTES.md) (core-file touchpoints, API surface, tests, measured results, and a suggested split into smaller PRs).
 
 ## Demo
 
