@@ -59,6 +59,8 @@ const PRECACHE = [
   '/static/css/15-notes.css?v=20261117settingssearch1',
   '/static/css/16-calendar.css?v=20261117settingssearch1',
   '/static/css/17-research.css?v=20261117settingssearch1',
+  '/static/css/18-cluster.css?v=20261122clusternet1',
+  '/static/css/19-cluster-toggle.css?v=20261122clusternet1',
   '/static/css/documents-gallery-editor.css?v=20261117settingssearch1',
   '/static/css/email-calendar-notes-tasks.css?v=20261117settingssearch1',
   '/static/css/cookbook-research-memory-settings.css?v=20261117settingssearch1',
@@ -301,6 +303,8 @@ const PRECACHE = [
   '/static/js/sidebar-layout.js?v=20260910sidebarbounce1',
   '/static/js/tileManager.js?v=20260910responsivebounds1',
   '/static/js/section-management.js',
+  '/static/js/cluster.js?v=20261122clusternet1',
+  '/static/js/clusterToggle.js?v=20261122clusternet1',
   '/static/lib/highlight.min.js',
   // Math turns up in ordinary answers and KaTeX is small, so precaching it and
   // its fonts keeps formulas typeset offline. Mermaid is deliberately NOT

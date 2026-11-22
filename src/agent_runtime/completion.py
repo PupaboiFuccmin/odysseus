@@ -203,6 +203,15 @@ def _event(data: dict) -> str:
     return 'data: ' + json.dumps(data) + '\n\n'
 
 
+def _cluster_network_turn(bound) -> bool:
+    import os
+    if os.environ.get('ODYSSEUS_CLUSTER_ENABLED', '0').strip().lower() in ('', '0', 'false', 'no', 'off'):
+        return False
+    if os.environ.get('ODYSSEUS_CLUSTER_NETWORK_GATE', '0') == '1':
+        return False
+    return str(bound.get('model') or '').strip() == 'cluster-network'
+
+
 def with_completion_gate(func):
     call_signature = signature(func)
 
@@ -213,6 +222,11 @@ def with_completion_gate(func):
         arguments = call_signature.bind(*args, **kwargs)
         arguments.apply_defaults()
         bound = arguments.arguments
+        if _cluster_network_turn(bound):
+            async with aclosing(func(*args, **kwargs)) as stream:
+                async for chunk in stream:
+                    yield chunk
+            return
         messages = bound.get('messages') or []
         instruction = next((m.get('content', '') for m in reversed(messages)
                             if m.get('role') == 'user' and isinstance(m.get('content'), str)), '')

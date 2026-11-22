@@ -975,6 +975,18 @@ app.include_router(setup_contacts_routes())
 from companion import setup_companion_routes
 app.include_router(setup_companion_routes())
 
+# Optional cluster UI & Cluster Network routing (off unless ODYSSEUS_CLUSTER_ENABLED=1).
+try:
+    from routes.cluster_routes import setup_cluster_routes
+    app.include_router(setup_cluster_routes())
+except Exception as _cluster_err:  # pragma: no cover
+    logger.warning("Cluster tab routes not loaded: %s", _cluster_err)
+try:
+    from routes.cluster_network import setup_cluster_network_routes
+    app.include_router(setup_cluster_network_routes())
+except Exception as _cluster_net_err:  # pragma: no cover
+    logger.warning("Cluster Network routes not loaded: %s", _cluster_net_err)
+
 # ========= ROUTES (kept in app.py) =========
 
 @app.get("/")
@@ -1015,6 +1027,10 @@ async def serve_memory(request: Request):
 
 @app.get("/gallery")
 async def serve_gallery(request: Request):
+    return await serve_index(request)
+
+@app.get("/cluster")
+async def serve_cluster(request: Request):
     return await serve_index(request)
 
 @app.get("/tasks")

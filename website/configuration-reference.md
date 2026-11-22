@@ -21,7 +21,7 @@ described as a switch that turns something off, the read rejects `0`, `false`,
 `no` and `off` and treats everything else as on. The `Default` column is the
 value the code falls back to when the variable is unset, quoted from the source.
 
-The source tree reads **150** `ODYSSEUS_*` variables: 92 an operator may want to set, and 58 that are internal - sentinels, fixture switches, capture hooks and development tooling. The internal ones are listed too, in their own section, so this page can be checked against the source mechanically.
+The source tree reads **164** `ODYSSEUS_*` variables: 104 an operator may want to set, and 60 that are internal - sentinels, fixture switches, capture hooks and development tooling. The internal ones are listed too, in their own section, so this page can be checked against the source mechanically.
 
 > This page is generated. Edit `scripts/generate_env_reference.py` and
 > re-run it; `tests/test_env_reference.py` enforces that the committed page
@@ -51,6 +51,8 @@ The source tree reads **150** `ODYSSEUS_*` variables: 92 an operator may want to
 
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
+| `ODYSSEUS_CLUSTER_DATA_DIR` | *unset* | `routes/cluster_routes.py` | Optional read-only mount path containing cluster journal, devices, and offload files. |
+| `ODYSSEUS_CLUSTER_LOCAL_DIR` | *unset* | `routes/cluster_routes.py` | Directory inside Odysseus data storage for cluster UI change-log entries. |
 | `ODYSSEUS_DATA_DIR` | `get_default_data_dir()` | `src/constants.py` (+1 more) | Root directory for every persisted file. Prefer this over the per-path overrides; the rest of `src/constants.py` derives from it. |
 | `ODYSSEUS_MAIL_ATTACHMENTS_DIR` | `os.path.join(DATA_DIR, 'mail-attachments')` | `src/constants.py` | Dedicated override for the mail attachment store, which otherwise lives under the data directory. |
 
@@ -59,6 +61,12 @@ The source tree reads **150** `ODYSSEUS_*` variables: 92 an operator may want to
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
 | `ODYSSEUS_ALLOW_LOCAL_IMAGE_MODELS` | `''` | `routes/gallery/gallery_routes.py` | Set to 1, true, yes or on to allow local image-generation and editing backends to be reachable as image providers. |
+| `ODYSSEUS_CLUSTER_API_URL` | *unset* | `routes/cluster_routes.py` | Base URL of the companion cluster manager HTTP API used by the Cluster tab. |
+| `ODYSSEUS_CLUSTER_BRIDGE_URL` | *unset* | `routes/cluster_network.py` | OpenAI-compatible `/v1` base URL of the Cluster Network bridge service. |
+| `ODYSSEUS_CLUSTER_ENABLED` | `'0'` | `src/agent_runtime/completion.py` (+2 more) | Opt-in master switch for the Cluster tab and Cluster Network chat routing. Off by default (`0`). |
+| `ODYSSEUS_CLUSTER_NETWORK` | *unset* | `routes/cluster_network.py` | Enables the Use Cluster Network chat toggle when `ODYSSEUS_CLUSTER_ENABLED` is on. Defaults to `1` when cluster support is enabled. |
+| `ODYSSEUS_CLUSTER_NODES` | *unset* | `routes/cluster_routes.py` | Optional JSON array describing cluster nodes when reading without a live manager. |
+| `ODYSSEUS_CLUSTER_TIMEOUT` | *unset* | `routes/cluster_routes.py` | HTTP request timeout in seconds when the Cluster tab polls the manager API. |
 | `ODYSSEUS_COPILOT_API_VERSION` | `'2026-06-01'` | `src/copilot.py` | Dated API-version header the Copilot models and chat endpoints require. |
 | `ODYSSEUS_COPILOT_CLIENT_ID` | `'01ab8ac9400c4e429b23'` | `src/copilot.py` | GitHub OAuth client id for the Copilot device flow. The default is the public VS Code client id; override it only with your own allow-listed app. |
 | `ODYSSEUS_DEEPSEEK_REASONING_EFFORT` | `'high'` | `src/llm_core.py` | Reasoning effort for DeepSeek. Only `high` and `max` are accepted; any other value falls back to the default. |
@@ -181,6 +189,10 @@ The source tree reads **150** `ODYSSEUS_*` variables: 92 an operator may want to
 
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
+| `ODYSSEUS_CLUSTER_API_TOKEN` | *unset* | `routes/cluster_routes.py` | Security-relevant. Bearer token for the companion cluster manager API; prefer `ODYSSEUS_CLUSTER_API_TOKEN_FILE` in Docker. |
+| `ODYSSEUS_CLUSTER_API_TOKEN_FILE` | *unset* | `routes/cluster_routes.py` | Path inside the container to the file containing the cluster manager API token. |
+| `ODYSSEUS_CLUSTER_BRIDGE_TOKEN` | *unset* | `routes/cluster_network.py` | Security-relevant. Bearer token for the Cluster Network bridge; prefer `ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE` in Docker. |
+| `ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE` | *unset* | `routes/cluster_network.py` | Path inside the container to the file containing the Cluster Network bridge token. |
 | `ODYSSEUS_INTERNAL_BASE` | *unset* | `src/constants.py` | Base URL the in-app tool layer uses for loopback HTTP calls. Set it when the app is not reachable at the port it thinks it is bound to. |
 | `ODYSSEUS_INTERNAL_TOKEN` | *unset* | `core/middleware.py` | Security-relevant. Token that lets the in-app tool layer reach admin-gated routes over loopback. Unset generates a fresh per-process token, which is what you want unless something outside the process needs the same value. |
 
@@ -215,6 +227,7 @@ Listed for completeness. Setting one of these on a real install is either a no-o
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
 | `ODYSSEUS_CAPTURE_MODEL_REQUESTS` | `''` | `src/agent_loop.py` | Truthy writes model-request snapshots for local debugging. The marker file `/tmp/odysseus_capture_model_requests` enables the same thing. |
+| `ODYSSEUS_CLUSTER_NETWORK_GATE` | `'0'` | `src/agent_runtime/completion.py` | Set to `1` to force the Odysseus completion gate to run on `cluster-network` turns. |
 | `ODYSSEUS_EXPOSE_RAW_BROWSER_MCP` | `''` | `src/agent_loop.py` | Truthy stops hiding the raw Playwright MCP tools from agent prompts when the private-browser tool is available. |
 | `ODYSSEUS_JEFF_` | *unset* | `src/jeff_decision.py` | Prefix for per-job decision adapter opt-ins; each job is disabled by default. |
 | `ODYSSEUS_JEFF_TIMEOUT` | `str(default)` | `src/jeff_decision.py` | Timeout in seconds for a decision adapter request. |
@@ -250,6 +263,7 @@ Listed for completeness. Setting one of these on a real install is either a no-o
 |---|---|---|---|
 | `ODYSSEUS_AJAX_TEST_URL` | *unset* | `tests/test_ajax_email_live.py` (+2 more) | Chat-completions URL of a live Ajax endpoint. Unset skips the opt-in live Ajax email tests. |
 | `ODYSSEUS_BROWSER_LIVE_CONTRACT` | *unset* | `tests/test_browser_producer_live_contract.py` | Set 1 only in the allowlisted release Docker environment to run the browser producer contract tests. Does not enable browser page operations. |
+| `ODYSSEUS_CLUSTER_MOCK` | *unset* | `routes/cluster_routes.py` | Set to `1` to populate the Cluster tab with synthetic RFC 5737 demo nodes for UI testing. |
 | `ODYSSEUS_DOCKER_TEST_IMAGE` | `'odysseus-odysseus:latest'` | `tests/test_docker_devops_hardening.py` | Docker image tag exercised by the DevOps Docker entrypoint integration tests. |
 | `ODYSSEUS_EDITOR_ACTIONS` | `','.join([*actions, 'edit', 'update'])` | `tests/tools/editor_writing_smoke.py` | Comma-separated writing actions the editor-writing smoke tool runs. Unset runs every action plus edit and update. |
 | `ODYSSEUS_EDITOR_MAX_TOKENS` | `'4096'` | `tests/tools/editor_writing_smoke.py` | Completion token limit for each editor-writing smoke request. |
@@ -303,7 +317,7 @@ reads three ways, because no single pattern covers the codebase:
   lines, so one read lives inside a string literal.
 
 The three passes are not redundancy. A line-based grep for a direct
-`os.environ.get("ODYSSEUS_...` call finds 118 of the 150 variables on this
+`os.environ.get("ODYSSEUS_...` call finds 132 of the 164 variables on this
 page. What it misses is reads through an env-reader helper, reads whose call
 spans more than one line, reads whose variable name is held in a module
 constant, and reads through a mapping passed in as an argument - which is the

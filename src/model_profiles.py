@@ -50,6 +50,8 @@ def uses_odysseus_progressive_thinking(value: object) -> bool:
 def supports_user_thinking_toggle(value: object) -> bool:
     """Whether the chat UI may expose an explicit thinking on/off switch."""
     leaf = model_id_leaf(value)
+    if leaf == "cluster-network":
+        return True
     if not leaf or uses_odysseus_progressive_thinking(leaf):
         return False
     if leaf.startswith(("gpt", "o1", "o3", "o4")):

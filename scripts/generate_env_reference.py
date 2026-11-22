@@ -1009,6 +1009,68 @@ VARIABLE_NOTES: dict[str, tuple[str, str, str]] = {
         "Seconds the server waits for in-flight requests and background loops to "
         "finish during a graceful shutdown.",
     ),
+
+    # -- Optional Cluster Network -------------------------------------------
+    "ODYSSEUS_CLUSTER_ENABLED": (
+        "Model routing and providers", USER,
+        "Opt-in master switch for the Cluster tab and Cluster Network chat routing. "
+        "Off by default (`0`).",
+    ),
+    "ODYSSEUS_CLUSTER_NETWORK": (
+        "Model routing and providers", USER,
+        "Enables the Use Cluster Network chat toggle when `ODYSSEUS_CLUSTER_ENABLED` "
+        "is on. Defaults to `1` when cluster support is enabled.",
+    ),
+    "ODYSSEUS_CLUSTER_API_URL": (
+        "Model routing and providers", USER,
+        "Base URL of the companion cluster manager HTTP API used by the Cluster tab.",
+    ),
+    "ODYSSEUS_CLUSTER_API_TOKEN": (
+        "Auth and internal API", USER,
+        "Security-relevant. Bearer token for the companion cluster manager API; "
+        "prefer `ODYSSEUS_CLUSTER_API_TOKEN_FILE` in Docker.",
+    ),
+    "ODYSSEUS_CLUSTER_API_TOKEN_FILE": (
+        "Auth and internal API", USER,
+        "Path inside the container to the file containing the cluster manager API token.",
+    ),
+    "ODYSSEUS_CLUSTER_BRIDGE_URL": (
+        "Model routing and providers", USER,
+        "OpenAI-compatible `/v1` base URL of the Cluster Network bridge service.",
+    ),
+    "ODYSSEUS_CLUSTER_BRIDGE_TOKEN": (
+        "Auth and internal API", USER,
+        "Security-relevant. Bearer token for the Cluster Network bridge; prefer "
+        "`ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE` in Docker.",
+    ),
+    "ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE": (
+        "Auth and internal API", USER,
+        "Path inside the container to the file containing the Cluster Network bridge token.",
+    ),
+    "ODYSSEUS_CLUSTER_DATA_DIR": (
+        "Data directories and paths", USER,
+        "Optional read-only mount path containing cluster journal, devices, and offload files.",
+    ),
+    "ODYSSEUS_CLUSTER_LOCAL_DIR": (
+        "Data directories and paths", USER,
+        "Directory inside Odysseus data storage for cluster UI change-log entries.",
+    ),
+    "ODYSSEUS_CLUSTER_NODES": (
+        "Model routing and providers", USER,
+        "Optional JSON array describing cluster nodes when reading without a live manager.",
+    ),
+    "ODYSSEUS_CLUSTER_TIMEOUT": (
+        "Model routing and providers", USER,
+        "HTTP request timeout in seconds when the Cluster tab polls the manager API.",
+    ),
+    "ODYSSEUS_CLUSTER_MOCK": (
+        "Testing, capture and development tooling", INTERNAL,
+        "Set to `1` to populate the Cluster tab with synthetic RFC 5737 demo nodes for UI testing.",
+    ),
+    "ODYSSEUS_CLUSTER_NETWORK_GATE": (
+        "Agent loop and tool execution", INTERNAL,
+        "Set to `1` to force the Odysseus completion gate to run on `cluster-network` turns.",
+    ),
 }
 
 

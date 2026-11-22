@@ -2795,7 +2795,7 @@ def setup_chat_routes(
             if thinking_mode is None and session_mode in {"on", "off"}:
                 thinking_mode = session_mode
             from src.model_profiles import supports_user_thinking_toggle
-            if not supports_user_thinking_toggle(sess.model):
+            if not supports_user_thinking_toggle(str(form_data.get("selected_model") or "").strip() or sess.model):
                 thinking_mode = "off"
             if reasoning_effort is None and session_mode.startswith("effort:"):
                 reasoning_effort = session_mode[7:].strip()

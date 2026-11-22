@@ -1,0 +1,21 @@
+/* Optional "Use Cluster Network" toggle — sits directly above the chat model picker. */
+.chat-input-top > .cluster-net-toggle {
+  position: absolute; right: 0; bottom: calc(100% + 8px); z-index: 251;
+  display: inline-flex; align-items: center; gap: 7px; height: 24px; padding: 0 6px 0 9px;
+  border: 1px solid var(--border); border-radius: 999px; background: var(--input-bg, var(--panel));
+  color: color-mix(in srgb, var(--fg) 75%, transparent); font: 600 11px/1 inherit; font-family: inherit; cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s;
+}
+.cluster-net-toggle:hover { border-color: color-mix(in srgb, var(--fg) 35%, transparent); }
+.cluster-net-toggle .cnt-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green, #3fb950); box-shadow: 0 0 5px var(--green, #3fb950); }
+.cluster-net-toggle.unhealthy .cnt-dot { background: var(--red, #f85149); box-shadow: 0 0 5px var(--red, #f85149); }
+.cluster-net-toggle:not(.on) .cnt-dot { background: var(--color-muted, #8b949e); box-shadow: none; }
+.cluster-net-toggle .cnt-switch { position: relative; width: 26px; height: 14px; border-radius: 999px;
+  border: 1px solid var(--border); background: color-mix(in srgb, var(--fg) 10%, transparent); }
+.cluster-net-toggle .cnt-switch span { position: absolute; top: 2px; left: 2px; width: 8px; height: 8px; border-radius: 50%;
+  background: color-mix(in srgb, var(--fg) 60%, transparent); transition: left .15s; }
+.cluster-net-toggle.on { color: var(--green, #3fb950); border-color: color-mix(in srgb, var(--green, #3fb950) 45%, transparent);
+  background: color-mix(in srgb, var(--green, #3fb950) 10%, var(--input-bg, var(--panel))); }
+.cluster-net-toggle.on .cnt-switch { background: color-mix(in srgb, var(--green, #3fb950) 30%, transparent); border-color: var(--green, #3fb950); }
+.cluster-net-toggle.on .cnt-switch span { left: 14px; background: var(--green, #3fb950); }
+body.cluster-net-on .chat-input-top > .model-picker-wrap { display: none !important; }
