@@ -116,3 +116,97 @@ def test_contrib_onboard_advisor_recommendation():
     rec = advise(probe, ctx={"devices": [], "manager_id": "manager", "peer_id": "worker"})
     assert rec["role"] in {"gpu-worker", "cpu-worker", "reviewer", "embeddings", "storage/memory", "monitor/sentinel"}
     assert rec["device"]["ip"] == "192.0.2.50"
+
+def test_cluster_hosts_disabled_by_default(monkeypatch):
+    for key in (
+        "ODYSSEUS_CLUSTER_ENABLED",
+        "ODYSSEUS_CLUSTER_MOCK",
+        "ODYSSEUS_CLUSTER_API_URL",
+        "ODYSSEUS_CLUSTER_API_TOKEN",
+        "ODYSSEUS_CLUSTER_NETWORK",
+    ):
+        monkeypatch.delenv(key, raising=False)
+
+    client = _client_with_cluster_routes(monkeypatch)
+    hosts = client.get("/api/cluster-network/hosts")
+    assert hosts.status_code == 200
+    data = hosts.json()
+    assert data["enabled"] is False
+    assert data["manager"] is None
+    assert data["workers"] == []
+    assert data["session"]["remote"] is False
+
+    session = client.get("/api/cluster-network/session")
+    assert session.status_code == 200
+    assert session.json()["enabled"] is False
+    assert session.json()["remote"] is False
+
+
+def test_cluster_hosts_mock_mode_groups_models(monkeypatch):
+    monkeypatch.setenv("ODYSSEUS_CLUSTER_ENABLED", "1")
+    monkeypatch.setenv("ODYSSEUS_CLUSTER_MOCK", "1")
+    monkeypatch.setenv("ODYSSEUS_CLUSTER_NETWORK", "1")
+
+    client = _client_with_cluster_routes(monkeypatch)
+    resp = client.get("/api/cluster-network/hosts")
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["enabled"] is True
+    assert data["manager"]["id"] == "manager-node"
+    assert data["manager"]["short_label"] == "Desktop"
+    assert data["manager"]["label"].startswith("Desktop")
+    assert data["manager"]["is_manager"] is True
+    assert any(m["id"] == "gemma4:12b" and m["via"] == "local-ollama" for m in data["manager"]["models"])
+    assert len(data["workers"]) == 1
+    worker = data["workers"][0]
+    assert worker["id"] == "worker-node"
+    assert worker["short_label"] == "Mini PC"
+    assert worker["bridge_prefix"] == "mini"
+    assert any(m["route_model"] == "mini/qwen2.5:7b" and m["via"] == "bridge" for m in worker["models"])
+    serialized = json.dumps(data)
+    assert "192.0.2." in serialized
+    assert "198.51.100." in serialized
+    assert "qarch-host" not in serialized
+    assert "mini-worker" not in serialized
+    assert "192.168." not in serialized
+    # Loopback session is local (the manager host), not a remote controller.
+    assert data["session"]["remote"] is False
+    session = client.get("/api/cluster-network/session")
+    assert session.json()["remote"] is False
+    # A forwarded controller / worker address is a remote session.
+    remote = client.get("/api/cluster-network/session", headers={"X-Forwarded-For": "198.51.100.30"})
+    assert remote.status_code == 200
+    body = remote.json()
+    assert body["remote"] is True
+    assert body["client_device_id"] == "remote-controller"
+    assert "models run on your cluster" in body["label"]
+    worker_ip = client.get("/api/cluster-network/session", headers={"X-Forwarded-For": "192.0.2.20"})
+    assert worker_ip.json()["remote"] is True
+    assert worker_ip.json()["client_device_id"] == "worker-node"
+    # Manager LAN / tailnet addresses stay local.
+    local_ts = client.get("/api/cluster-network/session", headers={"X-Forwarded-For": "198.51.100.10"})
+    assert local_ts.json()["remote"] is False
+
+
+def test_cluster_payload_lists_devices_used():
+    import sys
+    contrib = ROOT / "contrib" / "cluster-network" / "bridge"
+    sys.path.insert(0, str(contrib))
+    try:
+        import orchestrator
+    finally:
+        sys.path.remove(str(contrib))
+
+    payload = orchestrator._cluster_payload({
+        "id": "o-test",
+        "mode": "plan",
+        "wall_s": 1.2,
+        "nodes_used": ["manager-node · gemma4:12b", "worker-node · qwen2.5:7b"],
+    })
+    assert payload["run_id"] == "o-test"
+    assert payload["mode"] == "plan"
+    assert payload["devices"] == [
+        {"id": "manager-node", "model": "gemma4:12b"},
+        {"id": "worker-node", "model": "qwen2.5:7b"},
+    ]
+    assert "qarch-host" not in json.dumps(payload)

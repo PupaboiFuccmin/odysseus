@@ -51,7 +51,7 @@ The source tree reads **164** `ODYSSEUS_*` variables: 104 an operator may want t
 
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
-| `ODYSSEUS_CLUSTER_DATA_DIR` | *unset* | `routes/cluster_routes.py` | Optional read-only mount path containing cluster journal, devices, and offload files. |
+| `ODYSSEUS_CLUSTER_DATA_DIR` | *unset* | `routes/cluster_network.py` (+1 more) | Optional read-only mount path containing cluster journal, devices, and offload files. |
 | `ODYSSEUS_CLUSTER_LOCAL_DIR` | *unset* | `routes/cluster_routes.py` | Directory inside Odysseus data storage for cluster UI change-log entries. |
 | `ODYSSEUS_DATA_DIR` | `get_default_data_dir()` | `src/constants.py` (+1 more) | Root directory for every persisted file. Prefer this over the per-path overrides; the rest of `src/constants.py` derives from it. |
 | `ODYSSEUS_MAIL_ATTACHMENTS_DIR` | `os.path.join(DATA_DIR, 'mail-attachments')` | `src/constants.py` | Dedicated override for the mail attachment store, which otherwise lives under the data directory. |
@@ -61,7 +61,7 @@ The source tree reads **164** `ODYSSEUS_*` variables: 104 an operator may want t
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
 | `ODYSSEUS_ALLOW_LOCAL_IMAGE_MODELS` | `''` | `routes/gallery/gallery_routes.py` | Set to 1, true, yes or on to allow local image-generation and editing backends to be reachable as image providers. |
-| `ODYSSEUS_CLUSTER_API_URL` | *unset* | `routes/cluster_routes.py` | Base URL of the companion cluster manager HTTP API used by the Cluster tab. |
+| `ODYSSEUS_CLUSTER_API_URL` | *unset* | `routes/cluster_network.py` (+1 more) | Base URL of the companion cluster manager HTTP API used by the Cluster tab. |
 | `ODYSSEUS_CLUSTER_BRIDGE_URL` | *unset* | `routes/cluster_network.py` | OpenAI-compatible `/v1` base URL of the Cluster Network bridge service. |
 | `ODYSSEUS_CLUSTER_ENABLED` | `'0'` | `src/agent_runtime/completion.py` (+2 more) | Opt-in master switch for the Cluster tab and Cluster Network chat routing. Off by default (`0`). |
 | `ODYSSEUS_CLUSTER_NETWORK` | *unset* | `routes/cluster_network.py` | Enables the Use Cluster Network chat toggle when `ODYSSEUS_CLUSTER_ENABLED` is on. Defaults to `1` when cluster support is enabled. |
@@ -189,8 +189,8 @@ The source tree reads **164** `ODYSSEUS_*` variables: 104 an operator may want t
 
 | Variable | Default | Read in | What it does |
 |---|---|---|---|
-| `ODYSSEUS_CLUSTER_API_TOKEN` | *unset* | `routes/cluster_routes.py` | Security-relevant. Bearer token for the companion cluster manager API; prefer `ODYSSEUS_CLUSTER_API_TOKEN_FILE` in Docker. |
-| `ODYSSEUS_CLUSTER_API_TOKEN_FILE` | *unset* | `routes/cluster_routes.py` | Path inside the container to the file containing the cluster manager API token. |
+| `ODYSSEUS_CLUSTER_API_TOKEN` | *unset* | `routes/cluster_network.py` (+1 more) | Security-relevant. Bearer token for the companion cluster manager API; prefer `ODYSSEUS_CLUSTER_API_TOKEN_FILE` in Docker. |
+| `ODYSSEUS_CLUSTER_API_TOKEN_FILE` | *unset* | `routes/cluster_network.py` (+1 more) | Path inside the container to the file containing the cluster manager API token. |
 | `ODYSSEUS_CLUSTER_BRIDGE_TOKEN` | *unset* | `routes/cluster_network.py` | Security-relevant. Bearer token for the Cluster Network bridge; prefer `ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE` in Docker. |
 | `ODYSSEUS_CLUSTER_BRIDGE_TOKEN_FILE` | *unset* | `routes/cluster_network.py` | Path inside the container to the file containing the Cluster Network bridge token. |
 | `ODYSSEUS_INTERNAL_BASE` | *unset* | `src/constants.py` | Base URL the in-app tool layer uses for loopback HTTP calls. Set it when the app is not reachable at the port it thinks it is bound to. |
@@ -263,7 +263,7 @@ Listed for completeness. Setting one of these on a real install is either a no-o
 |---|---|---|---|
 | `ODYSSEUS_AJAX_TEST_URL` | *unset* | `tests/test_ajax_email_live.py` (+2 more) | Chat-completions URL of a live Ajax endpoint. Unset skips the opt-in live Ajax email tests. |
 | `ODYSSEUS_BROWSER_LIVE_CONTRACT` | *unset* | `tests/test_browser_producer_live_contract.py` | Set 1 only in the allowlisted release Docker environment to run the browser producer contract tests. Does not enable browser page operations. |
-| `ODYSSEUS_CLUSTER_MOCK` | *unset* | `routes/cluster_routes.py` | Set to `1` to populate the Cluster tab with synthetic RFC 5737 demo nodes for UI testing. |
+| `ODYSSEUS_CLUSTER_MOCK` | *unset* | `routes/cluster_network.py` (+1 more) | Set to `1` to populate the Cluster tab with synthetic RFC 5737 demo nodes for UI testing. |
 | `ODYSSEUS_DOCKER_TEST_IMAGE` | `'odysseus-odysseus:latest'` | `tests/test_docker_devops_hardening.py` | Docker image tag exercised by the DevOps Docker entrypoint integration tests. |
 | `ODYSSEUS_EDITOR_ACTIONS` | `','.join([*actions, 'edit', 'update'])` | `tests/tools/editor_writing_smoke.py` | Comma-separated writing actions the editor-writing smoke tool runs. Unset runs every action plus edit and update. |
 | `ODYSSEUS_EDITOR_MAX_TOKENS` | `'4096'` | `tests/tools/editor_writing_smoke.py` | Completion token limit for each editor-writing smoke request. |

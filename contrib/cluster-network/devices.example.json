@@ -1,5 +1,5 @@
 {
-  "_doc": "Example cluster device registry. Copy to devices.json and replace with your own hosts, IPs, and hardware details. Types: compute | router | controller | printer | camera | cooling | power-meter | smart-plug | generic.",
+  "_doc": "Example cluster device registry. Copy to devices.json and replace with your own hosts, IPs, and hardware details. Types: compute | router | controller | printer | camera | cooling | power-meter | smart-plug | generic. Optional fields used by the model picker and remote-session banner: label, short_label, aliases, bridge_prefix (the prefix on worker route ids such as mini/<model>), tailscale_ip, and ip_aliases. Example addresses are RFC 5737 documentation ranges (192.0.2.0/24, 198.51.100.0/24).",
   "devices": [
     {
       "id": "manager-node",
@@ -20,7 +20,18 @@
         "ram_gb": 32,
         "os": "Linux",
         "os_vendor": "linux"
-      }
+      },
+      "label": "Desktop",
+      "short_label": "Desktop",
+      "aliases": [
+        "desktop",
+        "manager"
+      ],
+      "bridge_prefix": "desktop",
+      "tailscale_ip": "198.51.100.10",
+      "ip_aliases": [
+        "198.51.100.10"
+      ]
     },
     {
       "id": "worker-node",
@@ -40,7 +51,18 @@
         "ram_gb": 16,
         "os": "Linux",
         "os_vendor": "linux"
-      }
+      },
+      "label": "Mini PC",
+      "short_label": "Mini PC",
+      "aliases": [
+        "mini",
+        "worker"
+      ],
+      "bridge_prefix": "mini",
+      "tailscale_ip": "198.51.100.20",
+      "ip_aliases": [
+        "198.51.100.20"
+      ]
     },
     {
       "id": "cluster-router",
@@ -90,7 +112,16 @@
         "cpu_vendor": "arm",
         "os": "Ubuntu",
         "os_vendor": "ubuntu"
-      }
+      },
+      "label": "Remote controller",
+      "short_label": "Remote controller",
+      "aliases": [
+        "controller"
+      ],
+      "tailscale_ip": "198.51.100.30",
+      "ip_aliases": [
+        "198.51.100.30"
+      ]
     },
     {
       "id": "printer-1",

@@ -65,6 +65,7 @@ If you run Ollama across more than one machine on your LAN or tailnet, the optio
 - **Use Cluster Network Toggle** — a chat toggle that routes turns through a manager-and-worker orchestrator (planning, parallel subtasks, peer review, and source verification).
 - **Frontier Agent Offload** — an authenticated MCP/REST server (`:11630`) so external tools like Claude Code or Cursor can offload token-heavy summarization, map-reduce extraction, and first-pass code reviews to your local GPUs.
 - **Hardware Onboarding** — a no-`sudo` probe and advisor (`probe.sh` + UI **Add device** panel) that recommends roles, fitting models, and setup checklists for new machines or peripherals.
+- **Host-aware model picker** — Cluster Network first, then Workers grouped by machine, with `ran on` reply footers and a remote-session banner so it is obvious that models run on the cluster, not on a controller.
 
 It is **off by default** (`ODYSSEUS_CLUSTER_ENABLED=0`) and degrades silently when unconfigured. See the [Cluster Network Guide](contrib/cluster-network/README.md) for architecture, security notes, and setup instructions.
 

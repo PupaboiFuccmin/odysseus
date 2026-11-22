@@ -87,6 +87,12 @@ _MOCK_NODES: list[dict[str, Any]] = [
         "ip": "192.0.2.10",
         "port": "eth0",
         "is_host": True,
+        "label": "Desktop",
+        "short_label": "Desktop",
+        "aliases": ["desktop", "manager"],
+        "bridge_prefix": "desktop",
+        "tailscale_ip": "198.51.100.10",
+        "ip_aliases": ["198.51.100.10"],
         "ollama": "",
         "backend": "CUDA",
         "hardware": {
@@ -107,6 +113,12 @@ _MOCK_NODES: list[dict[str, Any]] = [
         "ip": "192.0.2.20",
         "port": "eth0",
         "is_host": False,
+        "label": "Mini PC",
+        "short_label": "Mini PC",
+        "aliases": ["mini", "worker"],
+        "bridge_prefix": "mini",
+        "tailscale_ip": "198.51.100.20",
+        "ip_aliases": ["198.51.100.20"],
         "ollama": "",
         "backend": "Vulkan",
         "hardware": {
@@ -138,6 +150,31 @@ _MOCK_ROUTER_DEVICE: dict[str, Any] = {
 }
 
 
+
+_MOCK_CONTROLLER_DEVICE: dict[str, Any] = {
+    "id": "remote-controller",
+    "name": "remote-controller",
+    "type": "controller",
+    "role": "remote / controller",
+    "job": "Wireless Odysseus browser controller (over a tailnet or LAN)",
+    "label": "Remote controller",
+    "short_label": "Remote controller",
+    "aliases": ["controller"],
+    "ip": "192.0.2.30",
+    "tailscale_ip": "198.51.100.30",
+    "ip_aliases": ["198.51.100.30"],
+    "vendor": "handheld",
+    "model": "ARM Handheld / Tablet",
+    "hardware": {
+        "system": "Linux Handheld",
+        "cpu": "ARM64",
+        "cpu_vendor": "arm",
+        "os": "Linux",
+        "os_vendor": "linux",
+    },
+}
+
+
 def _registry(*, allow_mock_defaults: bool | None = None) -> list[dict[str, Any]]:
     """Device registry: ODYSSEUS_CLUSTER_NODES > <data_dir>/devices.json > mock defaults (if mock enabled)."""
     raw = os.environ.get("ODYSSEUS_CLUSTER_NODES")
@@ -159,7 +196,7 @@ def _registry(*, allow_mock_defaults: bool | None = None) -> list[dict[str, Any]
             return [dict(d, type=d.get("type") or "compute") for d in v if isinstance(d, dict) and d.get("id")]
     use_mock = _force_mock() if allow_mock_defaults is None else allow_mock_defaults
     if use_mock:
-        return [dict(n, type="compute") for n in _MOCK_NODES] + [dict(_MOCK_ROUTER_DEVICE)]
+        return [dict(n, type="compute") for n in _MOCK_NODES] + [dict(_MOCK_ROUTER_DEVICE), dict(_MOCK_CONTROLLER_DEVICE)]
     return []
 
 

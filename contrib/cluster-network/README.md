@@ -16,7 +16,8 @@ Turn Odysseus into the hub for a multi-machine local LLM cluster — with **chai
 
 2. **Use Cluster Network Toggle (Chat Routing)**
    - Adds a **Use Cluster Network** switch directly above the chat model picker (on by default when enabled).
-   - Routes messages through the companion bridge (`orchestrator.py`): a manager model classifies each request (`trivial`, `tools`, `direct`, or `plan`), dispatches simple work to fast/worker nodes in parallel, reviews worker outputs (plus source checks for web searches), retries or escalates to the manager on failure, and streams progress in the collapsible thinking block.
+   - The model picker lists **Cluster Network** first (the routed orchestrator, then the manager's own models) and a **Workers** section under that, with a remembered sub-group per worker machine. Each model has a host badge; offline hosts show a red badge. Replies end with a `ran on <device> · <model>` line, and a remote-session banner appears when you open Odysseus from a controller or another machine, so it is clear that models run on the cluster, not on the device in your hands.
+   - Routes messages through the companion bridge (`orchestrator.py`): a manager model classifies each request (`trivial`, `tools`, `direct`, or `plan`), dispatches simple work to fast/worker nodes in parallel, reviews worker outputs (plus source checks for web searches), retries or escalates to the manager on failure, and streams progress in the collapsible thinking block. The final stream chunk includes structured `cluster` metadata (devices and models used) so the footer can name every machine that ran.
 
 3. **Frontier Agent Offload (`:11630`)**
    - An authenticated MCP (`/mcp`) + REST (`/v1/offload/*`) endpoint that lets external coding or chat agents (Claude Code, Cursor, etc.) offload token-heavy reading—summarizing large logs, map-reduce passes over repositories, bulk extraction, and first-pass diffs—to your local cluster, returning compact cited results so the frontier model spends tokens on decisions instead of raw text.
@@ -129,7 +130,7 @@ From the repository root:
 
 Edit the generated files in `$HOME/llm-cluster/`:
 - `config.json` — set `node` (your manager name), `bind` IPs, `peer` (your worker IP/Ollama URL), and `models`.
-- `devices.json` — list your manager, worker(s), router, and any peripherals (see `devices.example.json`).
+- `devices.json` — list your manager, worker(s), router, and any peripherals (see `devices.example.json`). Optional fields: `label` / `short_label` (picker badges, e.g. `Desktop` or `Mini PC`), `aliases`, `bridge_prefix` (the prefix on worker route ids such as `mini/<model>`), `tailscale_ip`, and `ip_aliases` (used to tell a local session from a remote controller). Example IPs in the template use RFC 5737 documentation ranges.
 - `bridge/bridge.json` — verify `nodes.desktop`, `nodes.mini`, and `orchestrator` model names.
 - `offload/offload.json` — add your Tailscale IP to `bind` / `allowed_hosts` and list directories you want frontier agents allowed to read in `path_allowlist`.
 
@@ -197,9 +198,16 @@ All cluster variables default to off/empty so upstream behavior stays unchanged:
 ### Companion Configuration Files
 
 - `config.json` — manager ports, node IDs, peer worker address, model defaults, timeouts, and alert thresholds.
-- `devices.json` — device inventory for the Cluster tab (compute nodes, routers, controllers, printers, power meters).
+- `devices.json` — device inventory for the Cluster tab and the model picker (compute nodes, routers, controllers, printers, power meters). Host badges and the remote-session banner read `label`, `aliases`, `bridge_prefix`, `tailscale_ip`, and `ip_aliases` from this file.
 - `bridge/bridge.json` — bridge bind addresses, `allow_cidrs`, orchestrator settings (`max_subtasks`, `fix_rounds`, context sizes), and Odysseus service URLs.
 - `offload/offload.json` — offload bind addresses, `allowed_hosts` / `allowed_origins`, rate/size limits, `path_allowlist`, and `path_denylist_globs`.
+
+When the feature is enabled, Odysseus also exposes:
+
+- `GET /api/cluster-network/hosts` — manager and worker catalogs, chat models, route ids, online state, and the current browser `session`.
+- `GET /api/cluster-network/session` — `{remote, client_device_id, client_name, label}` for the remote-session banner (also included on `/config` and `/hosts`).
+
+Both routes return `enabled: false` (and an empty catalog) when `ODYSSEUS_CLUSTER_ENABLED` is off, so the picker stays unchanged.
 
 ---
 

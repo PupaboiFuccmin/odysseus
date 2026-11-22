@@ -183,6 +183,29 @@ def _sources_block(sources: list[dict]) -> str:
     return "\n".join(f"[{i + 1}] {s['title']} — {s['url']}\n    {s['snippet']}" for i, s in enumerate(sources))
 
 
+def _cluster_payload(run: dict) -> dict:
+    """Structured provenance for Odysseus 'ran on' footers (devices used per step)."""
+    devices = run.get("devices") or []
+    if not devices:
+        for item in run.get("nodes_used") or []:
+            if isinstance(item, dict):
+                devices.append({"id": item.get("id") or item.get("node") or item.get("device"), "model": item.get("model")})
+            elif isinstance(item, str):
+                if " · " in item:
+                    node, model = item.split(" · ", 1)
+                    devices.append({"id": node.strip(), "model": model.strip()})
+                else:
+                    devices.append({"id": item, "model": None})
+    return {
+        "run_id": run.get("id"),
+        "mode": run.get("mode"),
+        "wall_s": run.get("wall_s"),
+        "nodes_used": run.get("nodes_used") or [f"{d['id']} · {d['model']}" if d.get("model") else d.get("id") for d in devices],
+        "devices": devices,
+        "subtasks": run.get("subtask_meta") or [],
+    }
+
+
 # ------------------------------------------------------------------ main entry
 
 async def handle(body: dict, stream: bool) -> AsyncIterator[str] | dict:
@@ -222,9 +245,12 @@ async def handle(body: dict, stream: bool) -> AsyncIterator[str] | dict:
     cid = "chatcmpl-" + run["id"]
     model = body.get("model") or "cluster-network"
 
-    def chunk(delta: dict, fin=None) -> str:
-        return "data: " + json.dumps({"id": cid, "object": "chat.completion.chunk", "created": int(time.time()), "model": model,
-                                      "choices": [{"index": 0, "delta": delta, "finish_reason": fin}]}, ensure_ascii=False) + "\n\n"
+    def chunk(delta: dict, fin=None, cluster=None) -> str:
+        payload = {"id": cid, "object": "chat.completion.chunk", "created": int(time.time()), "model": model,
+                   "choices": [{"index": 0, "delta": delta, "finish_reason": fin}]}
+        if cluster:
+            payload["cluster"] = cluster
+        return "data: " + json.dumps(payload, ensure_ascii=False) + "\n\n"
 
     if not stream:
         content, reasoning = [], []
@@ -242,7 +268,7 @@ async def handle(body: dict, stream: bool) -> AsyncIterator[str] | dict:
         return {"id": cid, "object": "chat.completion", "created": int(time.time()), "model": model,
                 "choices": [{"index": 0, "message": {"role": "assistant", "content": "".join(content),
                                                      "reasoning_content": "".join(reasoning)}, "finish_reason": "stop"}],
-                "usage": {}, "cluster": {"run_id": run["id"], "mode": run.get("mode")}}
+                "usage": {}, "cluster": _cluster_payload(run)}
 
     async def gen():
         yield chunk({"role": "assistant", "content": ""})
@@ -269,7 +295,7 @@ async def handle(body: dict, stream: bool) -> AsyncIterator[str] | dict:
             elif kind == "raw":
                 yield text if text.endswith("\n\n") else text + "\n\n"
             last = time.time()
-        yield chunk({}, "stop")
+        yield chunk({}, "stop", cluster=_cluster_payload(run))
         yield "data: [DONE]\n\n"
     return gen()
 
@@ -538,6 +564,22 @@ async def _passthrough(body: dict, put, act, run, desk_url: str, mm: str) -> Non
 
 async def _finish(run, user, text, put, act, footer=True, nodes_used=None, results=None, notify=False) -> None:
     wall = round(time.time() - run["t0"], 1)
+    used = list(nodes_used or [])
+    devices = []
+    for item in used:
+        if isinstance(item, dict):
+            devices.append({"id": item.get("id") or item.get("node") or item.get("device"), "model": item.get("model")})
+        elif isinstance(item, str) and " · " in item:
+            node, model = item.split(" · ", 1)
+            devices.append({"id": node.strip(), "model": model.strip()})
+        elif isinstance(item, str):
+            devices.append({"id": item, "model": None})
+    run["wall_s"] = wall
+    run["nodes_used"] = used
+    run["devices"] = devices
+    run["subtask_meta"] = [{k: r.get(k) for k in ("id", "title", "kind", "node", "model", "s", "tok_s")}
+                           | {"device": r.get("node"), "pass": (r.get("verdict") or {}).get("pass")}
+                           for r in results or []]
     if footer:
         rv = [r for r in results or [] if r["verdict"].get("method") != "manager-own"]
         rv_s = f" · reviewed {sum(1 for r in rv if r['verdict'].get('pass'))}/{len(rv)} passed" if rv else ""
