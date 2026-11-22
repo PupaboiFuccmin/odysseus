@@ -57,6 +57,17 @@ Native installs, GPU notes, Windows/macOS instructions, HTTPS, and configuration
 - **Notes, Tasks + Calendar** — reminders, todos, scheduled agent tasks, and CalDAV sync.
 - **Extras** — gallery/image editor, themes, uploads, web search, presets, sessions, and 2FA.
 
+## Optional: Multi-Machine Cluster Network
+
+If you run Ollama across more than one machine on your LAN or tailnet, the optional [`contrib/cluster-network/`](contrib/cluster-network/README.md) companion turns Odysseus into a hub for your local cluster:
+
+- **Cluster Tab** — interactive Chain-of-Command map, live node telemetry (VRAM, power, temps, models), logs, task history, and performance charts with a change log.
+- **Use Cluster Network Toggle** — a chat toggle that routes turns through a manager-and-worker orchestrator (planning, parallel subtasks, peer review, and source verification).
+- **Frontier Agent Offload** — an authenticated MCP/REST server (`:11630`) so external tools like Claude Code or Cursor can offload token-heavy summarization, map-reduce extraction, and first-pass code reviews to your local GPUs.
+- **Hardware Onboarding** — a no-`sudo` probe and advisor (`probe.sh` + UI **Add device** panel) that recommends roles, fitting models, and setup checklists for new machines or peripherals.
+
+It is **off by default** (`ODYSSEUS_CLUSTER_ENABLED=0`) and degrades silently when unconfigured. See the [Cluster Network Guide](contrib/cluster-network/README.md) for architecture, security notes, and setup instructions.
+
 ## Demo
 
 A full hover-to-play tour lives on the [Odysseus landing page](https://odysseus-dev.github.io/odysseus/). Its source lives under [`website/`](website/).
